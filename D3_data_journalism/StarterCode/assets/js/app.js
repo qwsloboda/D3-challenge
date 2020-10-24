@@ -1,9 +1,8 @@
-// @TODO: YOUR CODE HERE!
 
 function xScale(data, chosenXAxis) {
     // create scales
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(hairData, d => d[chosenXAxis]) * 0.8,
+      .domain([d3.min(data, d => d[chosenXAxis]) * 0.8,
         d3.max(data, d => d[chosenXAxis]) * 1.2
       ])
       .range([0, width]);  //width define at beginning of main code
@@ -55,14 +54,14 @@ function xScale(data, chosenXAxis) {
       label = "In Poverty (%)";
     }
     else {
-      label = "# of Albums:";
+      label = "In Poverty (%)";
     }
   
     var toolTip = d3.tip()
       .attr("class", "tooltip")
       .offset([80, -60])
       .html(function(d) {
-        return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
+        return (`<br> State: ${d.state}<br>Healthcare: ${d.healthcare}<br>Poverty(%): ${d.poverty}`);
       });
 
     //Note:  Below circlesGroup is having the tooltip added but other objects could also have the tool tip added
@@ -77,7 +76,7 @@ function xScale(data, chosenXAxis) {
       toolTip.show(data, this);
     })
       // onmouseout event
-      .on("mouseout", function(data, index) {
+      .on("mouseout", function(data) {
         toolTip.hide(data);
       });
   
@@ -107,7 +106,7 @@ var height = svgHeight - margin.top - margin.bottom;
 // Create an SVG wrapper, append an SVG group that will hold our chart,
 // and shift the latter by left and top margins.
 var svg = d3
-  .select(".chart")
+  .select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -125,17 +124,18 @@ var chartGroup = svg.append("g")
 
 // Initial Params - includes any axis selection that has multiple options
 var chosenXAxis = "poverty";
-
+var chosenYAxis = "healthcare";
 
 // Retrieve data from the CSV file and execute everything below
-d3.csv("data.csv").then(function(censusData, err) {
+d3.csv("assets/data/data.csv").then(function(data, err) {
   if (err) throw err;
-   
+
   // parse data - set values to numerical data types
   data.forEach(function(data) {
     data.poverty = +data.poverty;
     data.healthcare = +data.healthcare;
-    //data.num_albums = +data.num_albums;
+
+    
   });
 
   // Data Exploration (Section 1)
@@ -162,7 +162,7 @@ d3.csv("data.csv").then(function(censusData, err) {
   // xLinearScale function above csv import; Note:  xLinearScale is a function contains scaled data specific to the defined axis
   // Important note:  xScale uses width that is defined above; xScale can only be called below width in the code
   // scaling function: https://www.d3indepth.com/scales/
-  var xLinearScale = xScale(censusData, chosenXAxis);
+  var xLinearScale = xScale(data, chosenXAxis);
   // Create initial axis functions; generates the scaled axis
   var bottomAxis = d3.axisBottom(xLinearScale);
   // append x axis; adds x axis chart data tick marks to chartgroup
@@ -195,7 +195,7 @@ d3.csv("data.csv").then(function(censusData, err) {
   // case is important - selectAll() works but SelectAll() would produce a type error - the capitalizaton makes a difference
   var circlesGroupAll = chartGroup
       .selectAll("circlesGroup")
-      .data(censusData)
+      .data(data)
       .enter()
     
   
@@ -294,8 +294,8 @@ d3.csv("data.csv").then(function(censusData, err) {
         textcirclesGroup = updateToolTip(chosenXAxis, textcirclesGroup)
 
         // changes classes to change bold text
-        if (chosenXAxis === "num_albums") {
-          albumsLabel
+        if (chosenXAxis === "poverty") {
+          povertyLabel
             .classed("active", true)
             .classed("inactive", false);
           hairLengthLabel
@@ -303,7 +303,7 @@ d3.csv("data.csv").then(function(censusData, err) {
             .classed("inactive", true);
         }
         else {
-          albumsLabel
+          povertyLabel
             .classed("active", false)
             .classed("inactive", true);
           hairLengthLabel
