@@ -298,7 +298,7 @@ d3.csv("assets/data/data.csv").then(function(data, err) {
           povertyLabel
             .classed("active", true)
             .classed("inactive", false);
-          hairLengthLabel
+          healthcareLabel
             .classed("active", false)
             .classed("inactive", true);
         }
@@ -306,7 +306,7 @@ d3.csv("assets/data/data.csv").then(function(data, err) {
           povertyLabel
             .classed("active", false)
             .classed("inactive", true);
-          hairLengthLabel
+          healthcareLabel
             .classed("active", true)
             .classed("inactive", false);
         }
